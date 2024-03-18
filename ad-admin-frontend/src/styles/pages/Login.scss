@@ -1,0 +1,87 @@
+.login-container {
+  width: 320px;
+  margin: auto;
+  padding: 40px 30px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  position: absolute;
+  top: 48%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  border-radius: 10px;
+}
+
+.login-container .logo {
+  font-size: 24px;
+  text-align: center;
+  margin-bottom: 30px;
+  font-weight: bold;
+  color: #31363f;
+}
+
+.login-container input[type='id'],
+.login-container input[type='password'] {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  box-sizing: border-box;
+  border-radius: 4px;
+}
+
+.login-container input:focus {
+  border: 1px solid grey;
+  outline: none;
+}
+
+.login-container .form-footer {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  font-size: 13px;
+  margin-top: 2px;
+  margin-bottom: 20px;
+  color: #31363f;
+
+  input {
+    display: none;
+    margin-right: 6px;
+  }
+
+  .login-checkbox {
+    display: flex;
+    width: 12px;
+    height: 12px;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    margin-right: 8px;
+  }
+
+  input:checked + label::after {
+    content: '✔';
+    width: 12px;
+    height: 12px;
+    font-size: 12.5px;
+    text-align: center;
+    line-height: 14px;
+    background-color: white;
+  }
+}
+
+.login-container .form-footer a {
+  color: #31363f;
+  text-decoration: none;
+}
+
+.login-container button[type='submit'] {
+  width: 100%;
+  padding: 10px;
+  background-color: #31363f;
+  color: white;
+  border: none;
+  border-radius: 4px;
+}
+
+.login-container button[type='submit']:hover {
+  opacity: 0.9;
+}
