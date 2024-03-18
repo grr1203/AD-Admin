@@ -1,62 +1,29 @@
-import { useState } from 'react';
-import './App.css';
-
-const SERVER_URL = 'http://localhost:4000';
+import { BrowserRouter, Outlet, Route, Routes } from 'react-router-dom';
+import Main from './pages/Main';
+import Login from './pages/Login';
+import SideNavigatioinBar from './components/SideNavigationBar';
+import DashBoard from './pages/DashBoard';
 
 function App() {
-  const [file, setFile] = useState<File | null>(null);
-
-  const handleUpload = async () => {
-    if (!file) {
-      alert('Please select a file');
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append('file', file);
-
-    const res = await fetch(`${SERVER_URL}/ad`, {
-      method: 'POST',
-      body: formData,
-    });
-    if (res.ok) {
-      const result = await res.json();
-      console.log(result);
-      alert('업로드 성공!');
-    } else {
-      alert('업로드 중 오류가 발생했습니다.');
-    }
-  };
-
-  const handleAdList = async () => {
-    const res = await fetch(`${SERVER_URL}/ad/list`);
-    const result = await res.json();
-    console.log('get ad list response:', result);
-  };
-
-  const updateAdMain = async () => {
-    const res = await fetch(`${SERVER_URL}/ad/main`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ fileName: '지지직지지직거리는옛날갬성티비.mp4' }),
-    });
-    const result = await res.json();
-    console.log('update ad main response:', result);
-  };
-
   return (
-    <>
-      <input
-        type="file"
-        accept="video/*,image/*"
-        onChange={(event) => event.target.files && setFile(event.target.files[0])}
-      />
-      <button onClick={handleUpload}>POST ad</button>
-      <button onClick={handleAdList}>GET ad/list</button>
-      <button onClick={updateAdMain}>PUT ad/main</button>
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route path="login" element={<Login />} />
+        <Route path="*" element={<MainLayout />}>
+          <Route index element={<Main />} />
+          <Route path="dashboard" element={<DashBoard />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+function MainLayout() {
+  return (
+    <div style={{ display: 'flex', height: '100vh' }}>
+      <SideNavigatioinBar />
+      <Outlet />
+    </div>
   );
 }
 

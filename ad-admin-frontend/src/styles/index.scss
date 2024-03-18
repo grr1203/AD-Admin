@@ -1,0 +1,19 @@
+@import './components/SideNavigationBar.scss';
+
+// default
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+  font-family: Pretendard Variable;
+  font-weight: 00;
+}
+
+@font-face {
+  font-family: 'Pretendard Variable';
+  src: url('./fonts/PretendardVariable.ttf') format('truetype');
+  font-weight: 100 200 300 400 500 600 700 800 900;
+  font-style: normal;
+}
