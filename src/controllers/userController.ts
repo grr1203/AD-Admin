@@ -13,3 +13,9 @@ export const login = async (req: any, res: Response) => {
   
   res.send('로그인 성공');
 };
+
+export const getUserList = async (req: any, res: Response) => {
+  const query = `SELECT idx, id FROM tb_user`;
+  const rows = req.db.prepare(query).all();
+  res.json(rows);
+}
