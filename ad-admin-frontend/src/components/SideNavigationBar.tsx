@@ -23,10 +23,6 @@ const SideNavigatioinBar = () => {
               backgroundColor: '#31363F',
               color: '#fff',
             },
-            [`&.active`]: {
-              backgroundColor: 'red',
-              color: 'red',
-            },
           },
         }}
       >
