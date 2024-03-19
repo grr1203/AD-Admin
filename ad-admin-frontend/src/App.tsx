@@ -3,6 +3,7 @@ import Main from './pages/Main';
 import Login from './pages/Login';
 import SideNavigatioinBar from './components/SideNavigationBar';
 import DashBoard from './pages/DashBoard';
+import User from './pages/User';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Route path="*" element={<MainLayout />}>
           <Route index element={<Main />} />
           <Route path="dashboard" element={<DashBoard />} />
+          <Route path="user" element={<User />} />
         </Route>
       </Routes>
     </BrowserRouter>
@@ -20,7 +22,7 @@ function App() {
 
 function MainLayout() {
   return (
-    <div style={{ display: 'flex', height: '100vh' }}>
+    <div style={{ display: 'flex', height: '100vh', width: '100vw' }}>
       <SideNavigatioinBar />
       <Outlet />
     </div>

@@ -34,6 +34,7 @@ const Login: React.FC = () => {
         localStorage.setItem('id', id);
         localStorage.setItem('password', password);
       }
+      localStorage.setItem('currentId', id);
       navigate('/', { state: { auth: true } });
     } else setOpenFailDialog(await res.text());
   };

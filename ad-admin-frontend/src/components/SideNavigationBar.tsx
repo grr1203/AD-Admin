@@ -29,13 +29,13 @@ const SideNavigatioinBar = () => {
         <MenuItem icon={<MdSpaceDashboard size="1.3em" />} component={<Link to="/dashboard" />}>
           대시보드
         </MenuItem>
-        <MenuItem icon={<MdPermMedia size="1.1em" />} component={<Link to="/" />}>
+        <MenuItem icon={<MdPermMedia size="1.1em" />} component={<Link to="/main" />}>
           컨텐츠 관리
         </MenuItem>
-        <MenuItem icon={<RiComputerFill size="1.2em" />} component={<Link to="/Main" />}>
+        <MenuItem icon={<RiComputerFill size="1.2em" />} component={<Link to="/device" />}>
           장치 관리
         </MenuItem>
-        <MenuItem icon={<RiAdminFill size="1.2em" />} component={<Link to="/login" />}>
+        <MenuItem icon={<RiAdminFill size="1.2em" />} component={<Link to="/user" />}>
           관리자
         </MenuItem>
       </Menu>
