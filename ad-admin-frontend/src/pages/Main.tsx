@@ -1,28 +1,31 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const SERVER_URL = 'http://localhost:4001';
 
 function Main() {
   const [file, setFile] = useState<File | null>(null);
+  const { state } = useLocation();
   const navigate = useNavigate();
 
   // 자동 로그인 체크
   useEffect(() => {
-    (async () => {
-      const id = localStorage.getItem('id');
-      const password = localStorage.getItem('password');
+    if (state.auth !== true) {
+      (async () => {
+        const id = localStorage.getItem('id');
+        const password = localStorage.getItem('password');
 
-      if (id && password) {
-        const res = await fetch(`${SERVER_URL}/api/login`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id, password }),
-        });
+        if (id && password) {
+          const res = await fetch(`${SERVER_URL}/api/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id, password }),
+          });
 
-        if (res.status !== 200) navigate('/login');
-      } else navigate('/login');
-    })();
+          if (res.status !== 200) navigate('/login');
+        } else navigate('/login');
+      })();
+    }
   }, []);
 
   const handleUpload = async () => {

@@ -15,7 +15,7 @@ import { Button } from '@/components/ui/button';
 const Login: React.FC = () => {
   const [id, setId] = useState('');
   const [password, setPassword] = useState('');
-  const [autoLogin, setAutoLogin] = useState(false);
+  const [autoLogin, setAutoLogin] = useState(true);
   const [openFailDialog, setOpenFailDialog] = useState('');
   const navigate = useNavigate();
 
@@ -34,7 +34,7 @@ const Login: React.FC = () => {
         localStorage.setItem('id', id);
         localStorage.setItem('password', password);
       }
-      navigate('/');
+      navigate('/', { state: { auth: true } });
     } else setOpenFailDialog(await res.text());
   };
 
@@ -55,7 +55,7 @@ const Login: React.FC = () => {
           />
         </div>
         <div className="form-footer">
-          <input type="checkbox" id="loginCheckbox" onChange={() => setAutoLogin(!autoLogin)} />
+          <input type="checkbox" id="loginCheckbox" onChange={() => setAutoLogin(!autoLogin)} defaultChecked />
           <label className="login-checkbox" htmlFor="loginCheckbox"></label>
           <label htmlFor="loginCheckbox">자동 로그인</label>
         </div>
