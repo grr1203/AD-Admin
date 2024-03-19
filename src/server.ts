@@ -3,7 +3,7 @@ import morgan from 'morgan';
 import cors from 'cors';
 import path from 'path';
 import Database from 'better-sqlite3';
-import { getAdMain } from './controllers/adController';
+import { login } from './controllers/adController';
 
 const app: express.Application = express();
 const port: number = 4001;
@@ -30,7 +30,7 @@ app.get('/', (request: Request, response: Response) => {
 });
 
 // API
-app.get('/ad/main', getAdMain);
+app.post('/api/login', login);
 
 // Server Run
 app.listen(port, () => console.log(`App is listening on port ${port} \n`));
