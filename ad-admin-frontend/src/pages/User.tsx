@@ -30,7 +30,7 @@ function User() {
   };
 
   return (
-    <div className="p-8 w-full">
+    <>
       <Card className="w-[420px] mb-10">
         <CardHeader>
           <CardTitle>User</CardTitle>
@@ -67,7 +67,7 @@ function User() {
           ))}
         </TableBody>
       </Table>
-    </div>
+    </>
   );
 }
 
