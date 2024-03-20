@@ -3,6 +3,7 @@ import Main from './pages/Main';
 import Login from './pages/Login';
 import SideNavigatioinBar from './components/SideNavigationBar';
 import DashBoard from './pages/DashBoard';
+import Device from './pages/Device';
 import User from './pages/User';
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
         <Route path="*" element={<MainLayout />}>
           <Route index element={<Main />} />
           <Route path="dashboard" element={<DashBoard />} />
+          <Route path="device" element={<Device />} />
           <Route path="user" element={<User />} />
         </Route>
       </Routes>
