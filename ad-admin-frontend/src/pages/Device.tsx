@@ -39,7 +39,7 @@ function Device() {
   const [code, setCode] = useState('');
   const [screenSizeSelect, setScreenSizeSelect] = useState(false);
   const [screenSizeList, setScreenSizeList] = useState<screenSize[]>([]);
-  const [deviceList, setDeviceList] = useState([]);
+  const [deviceList, setDeviceList] = useState<Device[]>([]);
   const [openDeleteDeviceDialog, setOpenDeleteDeviceDialog] = useState(false);
   const [selectedRow, setSelectedRow] = useState(0);
   const { toast } = useToast();
@@ -221,7 +221,9 @@ function Device() {
                     <DialogContent className="sm:max-w-[400px]">
                       <DialogHeader>
                         <DialogTitle>장치 제거</DialogTitle>
-                        <DialogDescription>디바이스를 삭제하시겠습니까?</DialogDescription>
+                        <DialogDescription>
+                          {`${(deviceList.find((e) => e.idx === selectedRow))?.name}`} 디바이스를 삭제하시겠습니까?
+                        </DialogDescription>
                       </DialogHeader>
                       <DialogFooter>
                         <DialogClose asChild>
