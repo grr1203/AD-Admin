@@ -3,7 +3,7 @@ import Main from './pages/Main';
 import Login from './pages/Login';
 import SideNavigatioinBar from './components/SideNavigationBar';
 import DashBoard from './pages/DashBoard';
-import Device from './pages/Device';
+import DeviceScreen from './pages/DeviceScreen';
 import User from './pages/User';
 
 function App() {
@@ -14,7 +14,7 @@ function App() {
         <Route path="*" element={<MainLayout />}>
           <Route index element={<Main />} />
           <Route path="dashboard" element={<DashBoard />} />
-          <Route path="device" element={<Device />} />
+          <Route path="device" element={<DeviceScreen />} />
           <Route path="user" element={<User />} />
         </Route>
       </Routes>
@@ -24,7 +24,7 @@ function App() {
 
 function MainLayout() {
   return (
-    <div style={{ display: 'flex', height: '100vh', width: '100vw' }}>
+    <div style={{ display: 'flex', height: '100vh', width: '100vw', backgroundColor:'#F9FBFC' }}>
       <SideNavigatioinBar />
       <div className="p-8 w-full">
         <Outlet />

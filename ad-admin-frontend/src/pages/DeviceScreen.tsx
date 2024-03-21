@@ -26,11 +26,9 @@ import { fetchServer } from '@/services/fetch';
 import { SERVER_URL } from '@/constants/constants';
 import { useToast } from '@/components/ui/use-toast';
 import { MdCircle } from 'react-icons/md';
+import { Device, screenSize } from '@/constants/type';
 
-type Device = { idx: number; name: string; ip: string; screenSize: string; code: string; registeredDate: string };
-type screenSize = { width: number; height: number };
-
-function Device() {
+function DeviceScreen() {
   const [openAddDeviceDialog, setOpenAddDeviceDialog] = useState(false);
   const [name, setName] = useState('');
   const [ip, setIp] = useState('');
@@ -45,11 +43,7 @@ function Device() {
   const { toast } = useToast();
 
   useEffect(() => {
-    (async () => {
-      const res = await fetch(`${SERVER_URL}/api/device/list`);
-      const data = await res.json();
-      setDeviceList(data);
-    })();
+    (async () => await getDeviceList())();
 
     (async () => {
       const res = await fetch(`${SERVER_URL}/api/screenSize/list`);
@@ -59,6 +53,12 @@ function Device() {
       setHeight(data[0].height);
     })();
   }, []);
+
+  const getDeviceList = async () => {
+    const res = await fetch(`${SERVER_URL}/api/device/list`);
+    const data = await res.json();
+    setDeviceList(data);
+  };
 
   const addDevice = async () => {
     if (name === '' || ip === '') {
@@ -70,8 +70,8 @@ function Device() {
     const res = await fetchServer('device', 'POST', { name, ip, screenSize, code, newScreenSize: screenSizeSelect });
     if (res.status === 200) {
       setOpenAddDeviceDialog(false);
+      await getDeviceList();
       toast({ duration: 2000, description: '장비 추가 성공' });
-      window.location.reload();
     }
   };
 
@@ -79,8 +79,8 @@ function Device() {
     const res = await fetchServer('device', 'DELETE', { idx: selectedRow });
     if (res.status === 200) {
       setOpenDeleteDeviceDialog(false);
+      await getDeviceList();
       toast({ duration: 2000, description: '장비 제거 성공' });
-      window.location.reload();
     }
   };
 
@@ -92,18 +92,6 @@ function Device() {
           <p className="text-muted-foreground mb-16">등록된 클라이언트 수 : {`${deviceList.length}`}</p>
         </div>
       </div>
-      {/* <Button
-        variant="outline"
-        onClick={() => {
-          toast({
-            // duration: 2000,
-            description: '장비 추가 성공',
-            title: 'Success',
-          });
-        }}
-      >
-        Show Toast
-      </Button> */}
       <Dialog open={openAddDeviceDialog} onOpenChange={setOpenAddDeviceDialog}>
         <DialogTrigger asChild className="w-[100px]">
           <Button variant="outline">등록하기</Button>
@@ -222,7 +210,7 @@ function Device() {
                       <DialogHeader>
                         <DialogTitle>장치 제거</DialogTitle>
                         <DialogDescription>
-                          {`${(deviceList.find((e) => e.idx === selectedRow))?.name}`} 디바이스를 삭제하시겠습니까?
+                          {`${deviceList.find((e) => e.idx === selectedRow)?.name}`} 디바이스를 삭제하시겠습니까?
                         </DialogDescription>
                       </DialogHeader>
                       <DialogFooter>
@@ -247,4 +235,4 @@ function Device() {
   );
 }
 
-export default Device;
+export default DeviceScreen;
