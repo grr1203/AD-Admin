@@ -5,6 +5,7 @@ import SideNavigatioinBar from './components/SideNavigationBar';
 import DashBoard from './pages/DashBoard';
 import DeviceScreen from './pages/DeviceScreen';
 import User from './pages/User';
+import ContentManage from './pages/ContentManage';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="*" element={<MainLayout />}>
           <Route index element={<Main />} />
           <Route path="dashboard" element={<DashBoard />} />
+          <Route path="content" element={<ContentManage />} />
           <Route path="device" element={<DeviceScreen />} />
           <Route path="user" element={<User />} />
         </Route>

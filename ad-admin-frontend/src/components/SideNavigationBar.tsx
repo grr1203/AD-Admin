@@ -29,7 +29,7 @@ const SideNavigatioinBar = () => {
         <MenuItem icon={<MdSpaceDashboard size="1.3em" />} component={<Link to="/dashboard" />}>
           대시보드
         </MenuItem>
-        <MenuItem icon={<MdPermMedia size="1.1em" />} component={<Link to="/main" />}>
+        <MenuItem icon={<MdPermMedia size="1.1em" />} component={<Link to="/content" />}>
           컨텐츠 관리
         </MenuItem>
         <MenuItem icon={<RiComputerFill size="1.2em" />} component={<Link to="/device" />}>
