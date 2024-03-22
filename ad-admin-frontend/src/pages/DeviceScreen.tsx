@@ -213,7 +213,7 @@ const DeviceRow = ({
         setStatus('off');
       }
     })();
-  });
+  }, [device]);
 
   const deleteDevice = async () => {
     const res = await fetchServer('device', 'DELETE', { idx: device.idx });
