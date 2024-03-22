@@ -27,7 +27,8 @@ import { SERVER_URL } from '@/constants/constants';
 import { useToast } from '@/components/ui/use-toast';
 import { MdCircle } from 'react-icons/md';
 import { Device, screenSize } from '@/constants/type';
-import { QueryObserverResult, RefetchOptions, useQuery } from '@tanstack/react-query';
+import { QueryObserverResult, RefetchOptions } from '@tanstack/react-query';
+import { useDeviceList } from '@/hooks/useDevice';
 
 function DeviceScreen() {
   const [openAddDeviceDialog, setOpenAddDeviceDialog] = useState(false);
@@ -39,15 +40,7 @@ function DeviceScreen() {
   const [screenSizeSelect, setScreenSizeSelect] = useState(false);
   const [screenSizeList, setScreenSizeList] = useState<screenSize[]>([]);
   const { toast } = useToast();
-
-  const getDeviceList = async () => {
-    const res = await fetch(`${SERVER_URL}/api/device/list`);
-    return await res.json();
-  };
-  const { data: deviceList, refetch: refetchDeviceList } = useQuery({
-    queryKey: ['deviceList'],
-    queryFn: getDeviceList,
-  });
+  const { deviceList, refetchDeviceList } = useDeviceList();
 
   useEffect(() => {
     (async () => {

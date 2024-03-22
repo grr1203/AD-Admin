@@ -3,7 +3,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
-import { SERVER_URL } from '@/constants/constants';
 import { Device } from '@/constants/type';
 import { useEffect, useState } from 'react';
 import {
@@ -25,9 +24,9 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/components/ui/use-toast';
 import { HiDotsHorizontal } from 'react-icons/hi';
+import { useDeviceList } from '@/hooks/useDevice';
 
 function ContentManage() {
-  const [deviceList, setDeviceList] = useState([]);
   const [currentDevice, setCurrentDevice] = useState<Device | null>(null);
   const [scrrenDirection, setScreenDirection] = useState('height'); // width / height
   const [contentList, setContentList] = useState<string[]>([]);
@@ -37,14 +36,7 @@ function ContentManage() {
   const [currentContentIndex, setCurrentContentIndex] = useState(0);
   const [openChangeMainContentDialog, setOpenChangeMainContentDialog] = useState(false);
   const { toast } = useToast();
-
-  useEffect(() => {
-    (async () => {
-      const res = await fetch(`${SERVER_URL}/api/device/list`);
-      const data = await res.json();
-      setDeviceList(data);
-    })();
-  }, []);
+  const { deviceList } = useDeviceList();
 
   useEffect(() => {
     if (!currentDevice) return;
@@ -143,7 +135,7 @@ function ContentManage() {
                   <div className="flex-[1]">IP</div>
                 </h4>
                 <Separator />
-                {deviceList.map((device: Device) => (
+                {deviceList?.map((device: Device) => (
                   <div
                     key={device.idx}
                     className="pt-3 hover:bg-[#F5F6F9] cursor-pointer"

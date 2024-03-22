@@ -1,9 +1,11 @@
 import { SERVER_URL } from '@/constants/constants';
+import { useDeviceList } from '@/hooks/useDevice';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function DashBoard() {
   const navigate = useNavigate();
+  const { deviceList } = useDeviceList();
 
   // 로그인 체크
   useEffect(() => {
@@ -29,7 +31,7 @@ function DashBoard() {
     <div className="p-8">
       <div className="space-y-2">
         <h1 className="text-4xl font-semibold tracking-tight pb-1">Dashboard</h1>
-        <p className="text-muted-foreground">등록된 클라이언트 수 : 11</p>
+        <p className="text-muted-foreground">등록된 클라이언트 수 : {deviceList?.length ?? 0}</p>
       </div>
     </div>
   );
