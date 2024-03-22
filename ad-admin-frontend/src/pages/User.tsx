@@ -30,8 +30,8 @@ function User() {
   };
 
   return (
-    <>
-      <Card className="w-[420px] mb-10">
+    <div className='p-8'>
+      <Card className="w-[420px] mb-10 shadow">
         <CardHeader>
           <CardTitle>User</CardTitle>
           <CardDescription className="pt-2">현재 관리자 정보</CardDescription>
@@ -67,7 +67,7 @@ function User() {
           ))}
         </TableBody>
       </Table>
-    </>
+    </div>
   );
 }
 

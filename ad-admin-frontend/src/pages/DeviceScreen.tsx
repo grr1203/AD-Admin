@@ -85,11 +85,11 @@ function DeviceScreen() {
   };
 
   return (
-    <div className="hidden h-full flex-1 flex-col space-y-8 md:flex">
+    <div className="hidden h-full flex-1 flex-col space-y-8 md:flex p-8">
       <div className="flex items-center justify-between space-y-2">
         <div>
           <h1 className="text-4xl font-semibold tracking-tight pb-4">Devices</h1>
-          <p className="text-muted-foreground mb-16">등록된 클라이언트 수 : {`${deviceList.length}`}</p>
+          <p className="text-muted-foreground mb-6">등록된 클라이언트 수 : {`${deviceList.length}`}</p>
         </div>
       </div>
       <Dialog open={openAddDeviceDialog} onOpenChange={setOpenAddDeviceDialog}>

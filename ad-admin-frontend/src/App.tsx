@@ -28,7 +28,7 @@ function MainLayout() {
   return (
     <div style={{ display: 'flex', height: '100vh', width: '100vw', backgroundColor:'#F9FBFC' }}>
       <SideNavigatioinBar />
-      <div className="p-8 w-full">
+      <div className="w-full">
         <Outlet />
       </div>
     </div>
