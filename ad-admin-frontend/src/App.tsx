@@ -1,5 +1,4 @@
 import { BrowserRouter, Outlet, Route, Routes } from 'react-router-dom';
-import Main from './pages/Main';
 import Login from './pages/Login';
 import SideNavigatioinBar from './components/SideNavigationBar';
 import DashBoard from './pages/DashBoard';
@@ -13,7 +12,7 @@ function App() {
       <Routes>
         <Route path="login" element={<Login />} />
         <Route path="*" element={<MainLayout />}>
-          <Route index element={<Main />} />
+          <Route index element={<DashBoard />} />
           <Route path="dashboard" element={<DashBoard />} />
           <Route path="content" element={<ContentManage />} />
           <Route path="device" element={<DeviceScreen />} />
@@ -26,7 +25,7 @@ function App() {
 
 function MainLayout() {
   return (
-    <div style={{ display: 'flex', height: '100vh', width: '100vw', backgroundColor:'#F9FBFC' }}>
+    <div style={{ display: 'flex', height: '100vh', width: '100vw', backgroundColor: '#F9FBFC' }}>
       <SideNavigatioinBar />
       <div className="w-full">
         <Outlet />
