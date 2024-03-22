@@ -5,5 +5,6 @@ export type Device = {
   screenSize: string;
   code: string;
   registeredDate: string;
+  [key:string]: unknown;
 };
 export type screenSize = { width: number; height: number };

@@ -27,6 +27,7 @@ import { SERVER_URL } from '@/constants/constants';
 import { useToast } from '@/components/ui/use-toast';
 import { MdCircle } from 'react-icons/md';
 import { Device, screenSize } from '@/constants/type';
+import { QueryObserverResult, RefetchOptions, useQuery } from '@tanstack/react-query';
 
 function DeviceScreen() {
   const [openAddDeviceDialog, setOpenAddDeviceDialog] = useState(false);
@@ -37,14 +38,18 @@ function DeviceScreen() {
   const [code, setCode] = useState('');
   const [screenSizeSelect, setScreenSizeSelect] = useState(false);
   const [screenSizeList, setScreenSizeList] = useState<screenSize[]>([]);
-  const [deviceList, setDeviceList] = useState<Device[]>([]);
-  const [openDeleteDeviceDialog, setOpenDeleteDeviceDialog] = useState(false);
-  const [selectedRow, setSelectedRow] = useState(0);
   const { toast } = useToast();
 
-  useEffect(() => {
-    (async () => await getDeviceList())();
+  const getDeviceList = async () => {
+    const res = await fetch(`${SERVER_URL}/api/device/list`);
+    return await res.json();
+  };
+  const { data: deviceList, refetch: refetchDeviceList } = useQuery({
+    queryKey: ['deviceList'],
+    queryFn: getDeviceList,
+  });
 
+  useEffect(() => {
     (async () => {
       const res = await fetch(`${SERVER_URL}/api/screenSize/list`);
       const data = await res.json();
@@ -53,12 +58,6 @@ function DeviceScreen() {
       setHeight(data[0].height);
     })();
   }, []);
-
-  const getDeviceList = async () => {
-    const res = await fetch(`${SERVER_URL}/api/device/list`);
-    const data = await res.json();
-    setDeviceList(data);
-  };
 
   const addDevice = async () => {
     if (name === '' || ip === '') {
@@ -70,17 +69,8 @@ function DeviceScreen() {
     const res = await fetchServer('device', 'POST', { name, ip, screenSize, code, newScreenSize: screenSizeSelect });
     if (res.status === 200) {
       setOpenAddDeviceDialog(false);
-      await getDeviceList();
+      await refetchDeviceList();
       toast({ duration: 2000, description: '장비 추가 성공' });
-    }
-  };
-
-  const deleteDevice = async () => {
-    const res = await fetchServer('device', 'DELETE', { idx: selectedRow });
-    if (res.status === 200) {
-      setOpenDeleteDeviceDialog(false);
-      await getDeviceList();
-      toast({ duration: 2000, description: '장비 제거 성공' });
     }
   };
 
@@ -89,7 +79,7 @@ function DeviceScreen() {
       <div className="flex items-center justify-between space-y-2">
         <div>
           <h1 className="text-4xl font-semibold tracking-tight pb-4">Devices</h1>
-          <p className="text-muted-foreground mb-6">등록된 클라이언트 수 : {`${deviceList.length}`}</p>
+          <p className="text-muted-foreground mb-6">등록된 클라이언트 수 : {`${deviceList?.length ?? 0}`}</p>
         </div>
       </div>
       <Dialog open={openAddDeviceDialog} onOpenChange={setOpenAddDeviceDialog}>
@@ -184,55 +174,101 @@ function DeviceScreen() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {...deviceList.map((device: Device) => {
-            const screenSize = JSON.parse(device.screenSize);
-            return (
-              <TableRow key={device.idx}>
-                <TableCell>{device.idx}</TableCell>
-                <TableCell>{device.name}</TableCell>
-                <TableCell className="tracking-wider">{device.ip}</TableCell>
-                <TableCell>{`${screenSize.width} x ${screenSize.height}`}</TableCell>
-                <TableCell>{device.code}</TableCell>
-                <TableCell>{device.registeredDate.split(' ')[0]}</TableCell>
-                <TableCell>
-                  {device.idx % 2 === 1 ? (
-                    <MdCircle className="text-[#5BB318]" />
-                  ) : (
-                    <MdCircle className="text-[#E72929]" />
-                  )}
-                </TableCell>
-                <TableCell onClick={() => setSelectedRow(device.idx)} className="text-center p-0">
-                  <Dialog open={openDeleteDeviceDialog} onOpenChange={setOpenDeleteDeviceDialog}>
-                    <DialogTrigger asChild className="w-[45px] h-[28px]">
-                      <Button variant="destructive">삭제</Button>
-                    </DialogTrigger>
-                    <DialogContent className="sm:max-w-[400px]">
-                      <DialogHeader>
-                        <DialogTitle>장치 제거</DialogTitle>
-                        <DialogDescription>
-                          {`${deviceList.find((e) => e.idx === selectedRow)?.name}`} 디바이스를 삭제하시겠습니까?
-                        </DialogDescription>
-                      </DialogHeader>
-                      <DialogFooter>
-                        <DialogClose asChild>
-                          <Button type="button" variant="secondary">
-                            취소
-                          </Button>
-                        </DialogClose>
-                        <Button variant="destructive" onClick={deleteDevice}>
-                          제거
-                        </Button>
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
-                </TableCell>
-              </TableRow>
-            );
-          })}
+          {deviceList &&
+            deviceList.map((device: Device) => (
+              <DeviceRow
+                key={device.idx}
+                device={device}
+                screenSize={JSON.parse(device.screenSize)}
+                refetchDeviceList={refetchDeviceList}
+              />
+            ))}
         </TableBody>
       </Table>
     </div>
   );
 }
+
+const DeviceRow = ({
+  device,
+  screenSize,
+  refetchDeviceList,
+}: {
+  device: Device;
+  screenSize: screenSize;
+  refetchDeviceList: (options?: RefetchOptions | undefined) => Promise<QueryObserverResult<unknown, Error>>;
+}) => {
+  const [openDeleteDeviceDialog, setOpenDeleteDeviceDialog] = useState(false);
+  const [status, setStatus] = useState('loading' as 'on' | 'off' | 'loading');
+  const { toast } = useToast();
+
+  // device 상태 확인
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch(`http://${device.ip}/ad/main`);
+        if (res.status === 200) setStatus('on');
+        else throw new Error(`${device.ip}로의 API 요청 실패`);
+      } catch (err) {
+        setStatus('off');
+      }
+    })();
+  });
+
+  const deleteDevice = async () => {
+    const res = await fetchServer('device', 'DELETE', { idx: device.idx });
+    if (res.status === 200) {
+      setOpenDeleteDeviceDialog(false);
+      await refetchDeviceList();
+      toast({ duration: 3000, description: '장비 제거 성공' });
+    }
+  };
+
+  return (
+    <TableRow key={device.idx}>
+      <TableCell>{device.idx}</TableCell>
+      <TableCell>{device.name}</TableCell>
+      <TableCell className="tracking-wider">{device.ip}</TableCell>
+      <TableCell>{`${screenSize.width} x ${screenSize.height}`}</TableCell>
+      <TableCell>{device.code}</TableCell>
+      <TableCell>{device.registeredDate.split(' ')[0]}</TableCell>
+      <TableCell>
+        {status === 'loading' ? (
+          <div
+            className="inline-block h-4 w-4 animate-spin rounded-full border-4 border-solid border-current border-e-transparent align-[-0.125em] text-surface motion-reduce:animate-[spin_1.5s_linear_infinite] dark:text-white text-[#0174BE]"
+            role="status"
+          />
+        ) : status === 'on' ? (
+          <MdCircle className="text-[#5BB318]" />
+        ) : (
+          <MdCircle className="text-[#E72929]" />
+        )}
+      </TableCell>
+      <TableCell className="text-center p-0">
+        <Dialog open={openDeleteDeviceDialog} onOpenChange={setOpenDeleteDeviceDialog}>
+          <DialogTrigger asChild className="w-[45px] h-[28px]">
+            <Button variant="destructive">삭제</Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[400px]">
+            <DialogHeader>
+              <DialogTitle>장치 제거</DialogTitle>
+              <DialogDescription>{device.name} 디바이스를 삭제하시겠습니까?</DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button type="button" variant="secondary">
+                  취소
+                </Button>
+              </DialogClose>
+              <Button variant="destructive" onClick={deleteDevice}>
+                제거
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </TableCell>
+    </TableRow>
+  );
+};
 
 export default DeviceScreen;
