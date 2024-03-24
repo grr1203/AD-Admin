@@ -22,7 +22,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useEffect, useState } from 'react';
-import { fetchServer } from '@/services/fetch';
+import { fetchServer, fetchTimeout } from '@/services/fetch';
 import { SERVER_URL } from '@/constants/constants';
 import { useToast } from '@/components/ui/use-toast';
 import { MdCircle } from 'react-icons/md';
@@ -199,7 +199,7 @@ const DeviceRow = ({
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch(`http://${device.ip}/ad/main`);
+        const res = await fetchTimeout(`http://${device.ip}/ad/main`, 4000);
         if (res.status === 200) setStatus('on');
         else throw new Error(`${device.ip}로의 API 요청 실패`);
       } catch (err) {
