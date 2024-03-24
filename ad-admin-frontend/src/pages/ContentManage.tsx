@@ -37,6 +37,7 @@ function ContentManage() {
   const [openChangeMainContentDialog, setOpenChangeMainContentDialog] = useState(false);
   const { toast } = useToast();
   const { deviceList } = useDeviceList();
+  const [fetching, setFetching] = useState<AbortController | null>(null);
 
   useEffect(() => {
     if (!currentDevice) return;
@@ -51,9 +52,12 @@ function ContentManage() {
   // 장치의 컨텐츠 목록 조회
   const getContentList = async () => {
     try {
-      const res = await fetch(`http://${currentDevice!.ip}/ad/list`);
+      if (fetching) fetching.abort();
+      const controller = new AbortController();
+      setFetching(controller);
+
+      const res = await fetch(`http://${currentDevice!.ip}/ad/list`, { signal: controller.signal });
       const data = await res.json();
-      console.log('get ad list response:', data);
       setContentList(data.adList);
     } catch (err) {
       //   console.error('error:', err);
@@ -117,7 +121,7 @@ function ContentManage() {
   };
 
   return (
-    <div className="hidden h-[100vh] overflow-hidden flex-col gap-8 md:flex">
+    <div className="hidden h-[100vh] flex-col gap-8 md:flex">
       <div className="space-y-2 px-8 pt-8">
         <h1 className="text-4xl font-semibold tracking-tight pb-1">Contents</h1>
         <p className="text-muted-foreground">컨텐츠 관리</p>
