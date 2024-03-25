@@ -1,21 +1,25 @@
 import { SERVER_URL } from '@/constants/constants';
-import { useDeviceList } from '@/hooks/useDevice';
-import { useEffect } from 'react';
+import { useDeviceContentsList, useDeviceList, useDeviceNetworkStatus, useDeviceServerStatus } from '@/hooks/useDevice';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Doughnut } from 'react-chartjs-2';
 import 'chart.js/auto';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Device } from '@/constants/type';
 import { Switch } from '@/components/ui/switch';
 import { MdSignalWifiStatusbarConnectedNoInternet2 } from 'react-icons/md';
 import { MdSignalWifiStatusbar2Bar } from 'react-icons/md';
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { PuffLoader, PropagateLoader } from 'react-spinners';
 
 function DashBoard() {
   const navigate = useNavigate();
   const { deviceList } = useDeviceList();
+  const { deviceNetworkStatusList, isDeviceNetworkStatusLoading } = useDeviceNetworkStatus(deviceList);
+  const { deviceServerStatusList, isDeviceServerStatusLoading } = useDeviceServerStatus(deviceList);
+  const { deviceContentsList, isDeviceContentsListLoading } = useDeviceContentsList(deviceList);
+  const [deviceStatusSwitch, setDeviceStatusSwitch] = useState<'on' | 'off'>('on');
 
   // 로그인 체크
   useEffect(() => {
@@ -37,57 +41,6 @@ function DashBoard() {
     }
   });
 
-  const dummyData = [
-    {
-      name: '으어아으어아어아야',
-      total: Math.floor(Math.random() * 10),
-    },
-    {
-      name: '가나다라마바사',
-      total: Math.floor(Math.random() * 10),
-    },
-    {
-      name: '아자차카 타파하하하하하',
-      total: Math.floor(Math.random() * 10),
-    },
-    {
-      name: 'Apr',
-      total: Math.floor(Math.random() * 10),
-    },
-    {
-      name: 'May',
-      total: Math.floor(Math.random() * 10),
-    },
-    {
-      name: 'Jun',
-      total: Math.floor(Math.random() * 10),
-    },
-    {
-      name: 'Jul',
-      total: Math.floor(Math.random() * 10),
-    },
-    {
-      name: 'Aug',
-      total: Math.floor(Math.random() * 10),
-    },
-    {
-      name: 'Sep',
-      total: Math.floor(Math.random() * 10),
-    },
-    {
-      name: 'Oct',
-      total: Math.floor(Math.random() * 10),
-    },
-    {
-      name: 'Nov',
-      total: Math.floor(Math.random() * 10),
-    },
-    {
-      name: 'Mar',
-      total: Math.floor(Math.random() * 10),
-    },
-  ];
-
   return (
     <div className="flex flex-col h-full">
       <div className="space-y-2 pt-8 px-8">
@@ -98,8 +51,22 @@ function DashBoard() {
       <div className="flex-grow flex p-8 gap-8 overflow-auto">
         <div className="flex-[3] flex flex-col gap-8">
           <div className="flex justify-between gap-8">
-            <StatusCard title="네트워크 상태" footer="IP connect status" on={30} off={11} />
-            <StatusCard title="소프트웨어 상태" footer="Software connect status" on={12} off={12} />
+            <StatusCard
+              title="네트워크 상태"
+              footer="IP connect status"
+              isLoading={isDeviceNetworkStatusLoading}
+              on={deviceNetworkStatusList?.filter((e) => e.status === 'on').length ?? 0}
+              off={deviceNetworkStatusList?.filter((e) => e.status === 'off').length ?? 0}
+              // on={30}
+              // off={11}
+            />
+            <StatusCard
+              title="소프트웨어 상태"
+              footer="Software connect status"
+              isLoading={isDeviceServerStatusLoading}
+              on={deviceServerStatusList?.filter((e) => e.status === 'on').length ?? 0}
+              off={deviceServerStatusList?.filter((e) => e.status === 'off').length ?? 0}
+            />
           </div>
 
           <div className="flex-grow-[3] h-[calc(100%-24rem)] min-h-60">
@@ -109,38 +76,52 @@ function DashBoard() {
               </CardHeader>
               <CardContent className="h-[80%] p-0 pr-6">
                 <ResponsiveContainer width="100%">
-                  <BarChart data={dummyData}>
-                    <XAxis
-                      dataKey="name"
-                      stroke="#888888"
-                      fontSize={12}
-                      tickLine={false}
-                      axisLine={false}
-                      minTickGap={-100}
-                      // overflow="visible"
-                      // interval={0}
-                      // angle={-90}
-                      // tick={CustomizedAxisTick2}
-                    />
-                    <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
-                    <Tooltip
-                      content={({ payload, label }) => {
-                        if (payload && payload.length) {
-                          return (
-                            <div className="relative p-4 rounded-lg shadow-md bg-[#FCFCFC] opacity-80">
-                              <p className="text-sm font-medium text-gray-800 mb-2">{label}</p>
-                              <p className="text-xs text-gray-600">PC에 업로드된 컨텐츠 수 : {payload[0].value}</p>
-                            </div>
-                          );
-                        } else return null;
-                      }}
-                    />
-                    <Bar
-                      dataKey="total"
-                      fill="#686D76" // #496989 design todo
-                      radius={[4, 4, 0, 0]}
-                    />
-                  </BarChart>
+                  {isDeviceContentsListLoading ? (
+                    <div className="h-[80%] flex justify-center items-center">
+                      <PropagateLoader color="#888D96" size={15} />
+                    </div>
+                  ) : (
+                    <BarChart
+                      data={deviceContentsList
+                        ?.sort((a, b) => b.contentList.length - a.contentList.length)
+                        .slice(0, 12)
+                        .sort(
+                          (a) =>
+                            [-0.16, 0.25, -0.34, 0.47, -0.08, 0.31, 0.42, -0.49, -0.27, 0.09, -0.14, 0.48][a.idx % 12]
+                        )
+                        .map((e) => ({
+                          name: e.name.length > 7 ? e.name.slice(0, 7) + '..' : e.name,
+                          total: e.contentList.length,
+                        }))}
+                    >
+                      <XAxis
+                        dataKey="name"
+                        stroke="#888888"
+                        fontSize={12}
+                        tickLine={false}
+                        axisLine={false}
+                        minTickGap={-100}
+                      />
+                      <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
+                      <Tooltip
+                        content={({ payload, label }) => {
+                          if (payload && payload.length) {
+                            return (
+                              <div className="relative p-4 rounded-lg shadow-md bg-[#FCFCFC] opacity-80">
+                                <p className="text-sm font-medium text-gray-800 mb-2">{label}</p>
+                                <p className="text-xs text-gray-600">PC에 업로드된 컨텐츠 수 : {payload[0].value}</p>
+                              </div>
+                            );
+                          } else return null;
+                        }}
+                      />
+                      <Bar
+                        dataKey="total"
+                        fill="#686D76" // #496989 design todo
+                        radius={[4, 4, 0, 0]}
+                      />
+                    </BarChart>
+                  )}
                 </ResponsiveContainer>
               </CardContent>
             </Card>
@@ -152,8 +133,11 @@ function DashBoard() {
             <CardHeader className="pt-4 pb-2">
               <CardTitle className="font-extralight text-xl mb-2">PC on/off 현황</CardTitle>
               <div className="flex justify-end gap-2">
-                <div className="font-light">ON</div>
-                <Switch className={`data-[state=checked]:bg-[${color.off}] data-[state=unchecked]:bg-[#007F73]`} />
+                <div className="font-light">{deviceStatusSwitch.toLocaleUpperCase()}</div>
+                <Switch
+                  className={`data-[state=checked]:bg-[#F56565] data-[state=unchecked]:bg-[#007F73]`}
+                  onClick={() => setDeviceStatusSwitch(deviceStatusSwitch === 'on' ? 'off' : 'on')}
+                />
               </div>
             </CardHeader>
             <CardContent className="overflow-auto">
@@ -164,18 +148,23 @@ function DashBoard() {
                     <div className="flex-[3]">등록명</div>
                   </h4>
                   <Separator />
-                  {deviceList?.map((device: Device) => (
-                    <div key={device.idx} className="pt-3 hover:bg-[#F5F6F5]">
-                      <div className="flex justify-between items-center px-4 pb-3">
-                        <div className="flex-[1] font-ligh pl-1">
-                          <MdSignalWifiStatusbar2Bar className="w-5 h-5 text-[#007F73]" />
-                          {/* <MdSignalWifiStatusbarConnectedNoInternet2 className='w-5 h-5 text-[#E72929]' /> */}
+                  {deviceServerStatusList
+                    ?.filter((e) => e.status === deviceStatusSwitch)
+                    .map((device) => (
+                      <div key={device.idx} className="pt-3 hover:bg-[#F5F6F5]">
+                        <div className="flex justify-between items-center px-4 pb-3">
+                          <div className="flex-[1] font-ligh pl-1">
+                            {deviceStatusSwitch === 'on' ? (
+                              <MdSignalWifiStatusbar2Bar className="w-5 h-5 text-[#007F73]" />
+                            ) : (
+                              <MdSignalWifiStatusbarConnectedNoInternet2 className="w-5 h-5 text-[#E72929]" />
+                            )}
+                          </div>
+                          <div className="flex-[3] text-sm font-light">{device.name}</div>
                         </div>
-                        <div className="flex-[3] text-sm font-light">{device.name}</div>
+                        <Separator />
                       </div>
-                      <Separator />
-                    </div>
-                  ))}
+                    ))}
                 </div>
               </ScrollArea>
             </CardContent>
@@ -188,7 +177,19 @@ function DashBoard() {
 
 const color = { on: '#48BB78', off: '#F56565' };
 
-const StatusCard = ({ title, footer, on, off }: { title: string; footer: string; on: number; off: number }) => {
+const StatusCard = ({
+  title,
+  footer,
+  isLoading,
+  on,
+  off,
+}: {
+  title: string;
+  footer: string;
+  isLoading: boolean;
+  on: number;
+  off: number;
+}) => {
   return (
     <Card className="h-64 shadow-md flex-[1]">
       <CardHeader className="pt-4 pb-2">
@@ -196,22 +197,26 @@ const StatusCard = ({ title, footer, on, off }: { title: string; footer: string;
       </CardHeader>
       <CardContent className="h-40 py-2 flex">
         <div>
-          <Doughnut
-            options={{
-              plugins: { legend: { display: false } },
-            }}
-            data={{
-              labels: ['Off', 'On'],
-              datasets: [
-                {
-                  data: [off, on],
-                  backgroundColor: [color.off, color.on],
-                  hoverBackgroundColor: ['#E53E3E', '#38A169'],
-                  hoverOffset: 4,
-                },
-              ],
-            }}
-          />
+          {isLoading ? (
+            <PuffLoader color={color.on} loading={isLoading} size={145} />
+          ) : (
+            <Doughnut
+              options={{
+                plugins: { legend: { display: false } },
+              }}
+              data={{
+                labels: ['Off', 'On'],
+                datasets: [
+                  {
+                    data: [off, on],
+                    backgroundColor: [color.off, color.on],
+                    hoverBackgroundColor: ['#E53E3E', '#38A169'],
+                    hoverOffset: 4,
+                  },
+                ],
+              }}
+            />
+          )}
         </div>
         <div className="mt-2 ml-8 flex flex-col min-w-24">
           <div className="flex items-center">
