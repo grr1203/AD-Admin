@@ -4,7 +4,7 @@ import cors from 'cors';
 import path from 'path';
 import Database from 'better-sqlite3';
 import { getUserList, login } from './controllers/userController';
-import { addDevice, deleteDevice, getDeviceList, getScreenSizeList } from './controllers/deviceController';
+import { addDevice, deleteDevice, getDeviceList, getScreenSizeList, pingDevice } from './controllers/deviceController';
 
 const app: express.Application = express();
 const port: number = 4001;
@@ -37,6 +37,7 @@ app.post('/api/device', addDevice);
 app.get('/api/device/list', getDeviceList);
 app.delete('/api/device', deleteDevice);
 app.get('/api/screenSize/list', getScreenSizeList);
+app.get('/api/ping', pingDevice);
 
 // Server Run
 app.listen(port, () => console.log(`App is listening on port ${port} \n`));
