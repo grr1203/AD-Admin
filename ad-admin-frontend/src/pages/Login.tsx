@@ -42,7 +42,7 @@ const Login: React.FC = () => {
   return (
     <div className="login-container">
       <form onSubmit={handleSubmit}>
-        <div className="logo">AD</div>
+        <img src="/LoginLogo.png" alt="logo" className="px-8 py-2" />
         <div>
           <input type="id" value={id} onChange={(e) => setId(e.target.value)} placeholder="ID" required />
         </div>
