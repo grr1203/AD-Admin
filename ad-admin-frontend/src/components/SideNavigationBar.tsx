@@ -14,7 +14,7 @@ const SideNavigatioinBar = () => {
         },
       }}
     >
-      <div className="title">AD</div>
+      <img src="/logo.png" alt="logo" className='pl-3 pr-8' />
       <div className="menu">Menu</div>
       <Menu
         menuItemStyles={{
