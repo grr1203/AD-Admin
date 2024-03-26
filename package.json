@@ -6,7 +6,7 @@
   "scripts": {
     "start": "nodemon --exec ts-node src/server.ts",
     "febuild": "cd ad-admin-frontend && npm run build && mkdir -p ../build && cp -r dist ../build/dist",
-    "build": "rm -r build || true && tsc && npm run febuild && zip -r ad-admin.zip build node_modules ad-admin.db script.js"
+    "build": "rm -r build || true && tsc && npm run febuild && zip -r ad-admin.zip build node_modules ad-admin.db script.js server.bat"
   },
   "author": "",
   "license": "MIT",
